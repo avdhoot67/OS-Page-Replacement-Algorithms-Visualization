@@ -17,6 +17,15 @@ A beautiful, interactive web application that visualizes page replacement algori
 ## Screenshots
 
 The application provides a modern UI with an interactive visualization of page replacement algorithms.
+<img width="939" height="440" alt="image" src="https://github.com/user-attachments/assets/2f8a179a-9679-46cc-b812-96acc314a2d9" />
+<img width="923" height="436" alt="image" src="https://github.com/user-attachments/assets/18048f0c-0f9c-4504-aec6-aed8564f7be2" />
+<img width="845" height="439" alt="image" src="https://github.com/user-attachments/assets/9b72a0ec-0def-419f-a7e5-ffd97aae43ea" />
+<img width="817" height="432" alt="image" src="https://github.com/user-attachments/assets/9201bd37-a273-48d4-bcad-c6fb591bf2c0" />
+<img width="833" height="377" alt="image" src="https://github.com/user-attachments/assets/266509ea-575b-4de4-898e-4a20671269c7" />
+
+
+
+
 
 ## Installation
 
