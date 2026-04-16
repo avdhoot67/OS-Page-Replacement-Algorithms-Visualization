@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Replacement Algorithms</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/main.js" defer></script>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-microchip"></i>
+                <h1>OS Page Replacement Algorithms</h1>
+            </div>
+        </header>
+
+        <main>
+            <div class="dashboard">
+                <div class="control-panel">
+                    <h2>Simulation Settings</h2>
+                    <div class="form-group">
+                        <label for="reference-string">Reference String:</label>
+                        <input type="text" id="reference-string" placeholder="e.g. 1 3 0 3 5 6 3">
+                        <div class="hint-container">
+                            <div class="hint-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <p class="hint">Enter page numbers separated by spaces. Use either numbers (e.g. 1 2 3) or letters (e.g. A B C) only, not both. Special characters and symbols are not allowed.</p>
+                        </div>
+                        <div id="error-message" class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span class="error-text"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="num-frames">Number of Frames:</label>
+                        <input type="number" id="num-frames" min="1" max="10" value="3">
+                    </div>
+                    <div class="form-group">
+                        <label for="algorithm">Algorithm:</label>
+                        <select id="algorithm">
+                            <option value="FIFO">FIFO (First In First Out)</option>
+                            <option value="LRU">LRU (Least Recently Used)</option>
+                            <option value="OPTIMAL">OPTIMAL</option>
+                            <option value="MRU">MRU (Most Recently Used)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="speed">Animation Speed:</label>
+                        <input type="range" id="speed" min="0.5" max="3" step="0.5" value="1.5">
+                        <span id="speed-value">1.5x</span>
+                    </div>
+                    <div class="buttons">
+                        <button id="run-btn" class="btn primary" type="button" onclick="startSimulation()">
+                            <i class="fas fa-play"></i> Run Simulation
+                        </button>
+                        <button id="pause-btn" class="btn secondary" type="button" onclick="togglePause()" disabled>
+                            <i class="fas fa-pause"></i> Pause
+                        </button>
+                        <button id="reset-btn" class="btn danger" type="button" onclick="resetSimulation()" disabled>
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="visualization-container">
+                    <div class="stats-panel">
+                        <div class="stat">
+                            <span class="label">Current Page:</span>
+                            <span id="current-page" class="value">-</span>
+                        </div>
+                        <div class="stat">
+                            <span class="label">Page Faults:</span>
+                            <span id="page-faults" class="value">0</span>
+                        </div>
+                    </div>
+
+                    <div class="visualization">
+                        <div class="reference-string-display">
+                            <h3>Reference String</h3>
+                            <div id="reference-sequence" class="sequence-container"></div>
+                        </div>
+                        
+                        <div class="frames-display">
+                            <h3>Memory Frames</h3>
+                            <div id="frames-container" class="frames-container"></div>
+                        </div>
+                        
+                        <div class="color-legend">
+                            <h3>Color Legend</h3>
+                            <div class="legend-items">
+                                <div class="legend-item">
+                                    <div class="color-box new"></div>
+                                    <span>Green: New page added to an empty frame</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="color-box replaced"></div>
+                                    <span>Orange: Page replaced using algorithm</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="color-box hit"></div>
+                                    <span>Blue: Cache hit (page already in memory)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="color-box fault-indicator">✗</div>
+                                    <span>Red ✗: Page fault (miss in cache)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="algorithm-info">
+                <h2>Algorithm Information</h2>
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="fifo">FIFO</button>
+                    <button class="tab-btn" data-tab="lru">LRU</button>
+                    <button class="tab-btn" data-tab="optimal">OPTIMAL</button>
+                    <button class="tab-btn" data-tab="mru">MRU</button>
+                </div>
+                <div class="tab-content">
+                    <div id="fifo" class="tab-pane active">
+                        <h3>First In First Out (FIFO)</h3>
+                        <p>FIFO is the simplest page replacement algorithm. In this algorithm, the operating system keeps track of all pages in memory in a queue, with the oldest page at the front of the queue. When a page needs to be replaced, the oldest page is selected.</p>
+                        <h4>Advantages:</h4>
+                        <ul>
+                            <li>Simple to implement</li>
+                            <li>Low overhead</li>
+                        </ul>
+                        <h4>Disadvantages:</h4>
+                        <ul>
+                            <li>Suffers from "Belady's Anomaly" (increasing frames can increase page faults)</li>
+                            <li>Does not consider page usage frequency</li>
+                        </ul>
+                    </div>
+                    <div id="lru" class="tab-pane">
+                        <h3>Least Recently Used (LRU)</h3>
+                        <p>LRU replaces the page that has not been used for the longest period of time. This algorithm works on the idea that pages that have been heavily used in the last few instructions will likely be heavily used again in the next few.</p>
+                        <h4>Advantages:</h4>
+                        <ul>
+                            <li>Better performance than FIFO in most cases</li>
+                            <li>Adapts to changing access patterns</li>
+                        </ul>
+                        <h4>Disadvantages:</h4>
+                        <ul>
+                            <li>More complex to implement</li>
+                            <li>Requires hardware support for efficient implementation</li>
+                        </ul>
+                    </div>
+                    <div id="optimal" class="tab-pane">
+                        <h3>Optimal (OPT or MIN)</h3>
+                        <p>The Optimal page replacement algorithm replaces the page that will not be used for the longest period of time. This is theoretically optimal but impossible to implement in practice as it requires future knowledge of the reference string.</p>
+                        <h4>Advantages:</h4>
+                        <ul>
+                            <li>Lowest possible page fault rate</li>
+                            <li>Used as a theoretical benchmark</li>
+                        </ul>
+                        <h4>Disadvantages:</h4>
+                        <ul>
+                            <li>Impossible to implement in practice (requires future knowledge)</li>
+                            <li>Can only be used for analysis and comparison</li>
+                        </ul>
+                    </div>
+                    <div id="mru" class="tab-pane">
+                        <h3>Most Recently Used (MRU)</h3>
+                        <p>MRU is the opposite of LRU. It replaces the most recently used page. This algorithm is based on the argument that the most recently used page should be replaced because it has just been used and may not be needed again for a while.</p>
+                        <h4>Advantages:</h4>
+                        <ul>
+                            <li>Works well for certain access patterns (like sequential scans)</li>
+                            <li>Relatively simple to implement</li>
+                        </ul>
+                        <h4>Disadvantages:</h4>
+                        <ul>
+                            <li>Performs poorly with cyclic access patterns</li>
+                            <li>Generally less effective than LRU</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2023 OS Page Replacement Algorithms</p>
+        </footer>
+    </div>
+</body>
+</html> 
